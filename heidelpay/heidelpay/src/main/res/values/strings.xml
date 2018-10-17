@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HeidelpaySDK</string>
+    <string name="finish_charge_cancel_action">Abbrechen</string>
+</resources>

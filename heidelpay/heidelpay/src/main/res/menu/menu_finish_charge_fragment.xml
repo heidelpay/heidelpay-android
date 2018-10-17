@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/finish_charge_cancel_action"
+        android:orderInCategory="100"
+        android:title="@string/finish_charge_cancel_action"
+        app:showAsAction="ifRoom" />
+
+</menu>
