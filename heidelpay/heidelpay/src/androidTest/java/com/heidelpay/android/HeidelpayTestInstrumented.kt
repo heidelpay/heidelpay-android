@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.heidelpay.android
 
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.runner.AndroidJUnit4
 import com.heidelpay.android.backend.BackendError
 import com.heidelpay.android.types.PaymentMethod
 import com.heidelpay.android.types.PublicKey
@@ -93,7 +93,7 @@ class HeidelpayTestInstrumented {
 
     @Test
     fun testCreateCardPayment() {
-        var heidelpayInstance : Heidelpay? = null
+        var heidelpayInstance: Heidelpay? = null
 
         var setupCallSucceeded = false
 
@@ -130,5 +130,13 @@ class HeidelpayTestInstrumented {
 
         lock.await(100, TimeUnit.MILLISECONDS)
         assertTrue(paymentTypeCallSucceeded)
+    }
+
+
+    @Test
+    fun testFrameworkVersion() {
+
+        assertEquals("1.1", Heidelpay.sdkVersion)
+
     }
 }

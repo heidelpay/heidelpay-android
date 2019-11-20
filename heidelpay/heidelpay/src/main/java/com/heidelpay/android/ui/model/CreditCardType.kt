@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,14 @@ enum class CreditCardType {
                 '3' -> return AmericanExpress
                 '4' -> return Visa
                 '6', '7', '9' -> return Maestro
+            }
+            return Unknown
+        }
+
+        fun fromBrandName(brandName: String): CreditCardType {
+            when (brandName) {
+                "MASTER" -> return MasterCard
+                "VISA" -> return Visa
             }
             return Unknown
         }

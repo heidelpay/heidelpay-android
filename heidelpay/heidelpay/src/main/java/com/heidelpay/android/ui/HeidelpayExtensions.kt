@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,20 @@ val PaymentMethod.icon: Int?
     get() {
         when (this) {
             PaymentMethod.Card -> return R.drawable.payment_method_genericcard
+            PaymentMethod.Giropay -> return R.drawable.payment_method_giropay
+            PaymentMethod.Ideal -> return R.drawable.payment_method_ideal
+            PaymentMethod.Invoice -> return R.drawable.payment_method_invoice
+            PaymentMethod.InvoiceGuaranteed -> return R.drawable.payment_method_invoice
+            PaymentMethod.InvoiceFactoring -> return R.drawable.payment_method_invoice
             PaymentMethod.SepaDirectDebit, PaymentMethod.SepaDirectDebitGuaranteed -> return R.drawable.payment_method_sepa
             PaymentMethod.Paypal -> return R.drawable.payment_method_paypal
+            PaymentMethod.Przelewy24 -> return R.drawable.payment_method_przelewy
             PaymentMethod.Sofort -> return R.drawable.payment_method_sofort
-            else -> return null
+            PaymentMethod.Prepayment -> return R.drawable.payment_method_prepayment
+            PaymentMethod.Alipay -> return R.drawable.payment_method_alipay
+            PaymentMethod.Wechatpay -> return R.drawable.payment_method_wechat
+            PaymentMethod.PIS -> return R.drawable.payment_method_pis
+            PaymentMethod.HirePurchase -> return R.drawable.payment_method_hire_purchase
         }
     }
 
@@ -46,10 +56,16 @@ val PaymentMethod.displayName: String
             PaymentMethod.Sofort -> return "Sofortüberweisung"
             PaymentMethod.Giropay -> return "Giropay"
             PaymentMethod.InvoiceGuaranteed -> return "Invoice Guaranteed"
+            PaymentMethod.InvoiceFactoring -> return "Invoice Factoring"
             PaymentMethod.Invoice -> return "Invoice"
             PaymentMethod.Prepayment -> return "Prepayment"
             PaymentMethod.Przelewy24 -> return "Przelewy24"
             PaymentMethod.Ideal -> return "iDEAL"
+            PaymentMethod.Alipay -> return "Alipay"
+            PaymentMethod.Wechatpay -> return "WeChat"
+            PaymentMethod.PIS -> return "PIS"
+            PaymentMethod.HirePurchase -> return "Hire Purchase"
+
         }
     }
 
@@ -66,9 +82,9 @@ val PaymentMethod.multipleInstancesAllowed: Boolean
 
 
 fun String.mask(): String {
-    if (this.length > 12) {
-        return this.substring(0, 6) + "******" + this.substring(12)
+    if (this.length <= 4) {
+        return "*"
     } else {
-        return "*".repeat(this.length)
+        return "*" + this.substring(this.length - 4)
     }
 }

@@ -8,3 +8,4 @@ heidelpay/.gradle
 
 
 *.iml
+.DS_Store

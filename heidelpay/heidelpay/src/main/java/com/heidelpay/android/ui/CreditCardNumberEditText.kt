@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,14 @@ package com.heidelpay.android.ui
 
 import android.content.Context
 import android.graphics.PorterDuff
-import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat
 import com.heidelpay.android.R
 import com.heidelpay.android.ui.model.CreditCardInput
 import com.heidelpay.android.ui.model.CreditCardType
+import com.heidelpay.android.ui.model.PaymentTypeInformationValidationResult
 
 /**`
  * Custom {@link android.widget.EditText} that automatically takes care of credit card number inputs and handles correct formatting as well as validation.
@@ -36,7 +37,7 @@ class CreditCardNumberEditText : FormattingEditText<CreditCardInput> {
 
     init {
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-        setKeyListener(DigitsKeyListener.getInstance("1234567890 "))
+        keyListener = DigitsKeyListener.getInstance("1234567890 ")
         hint = "Card Number"
     }
 
@@ -63,19 +64,22 @@ class CreditCardNumberEditText : FormattingEditText<CreditCardInput> {
         }
         return input
     }
+
+    override fun shouldColorAsValidInput(userInput: CreditCardInput): Boolean {
+        return userInput.validationResult == PaymentTypeInformationValidationResult.ValidChecksum ||
+                userInput.validationResult == PaymentTypeInformationValidationResult.InvalidLength
+    }
 }
 
 /**
  * An extension of {@link CreditCardType} returning the associated credit card icon for a given card type
  */
-private val CreditCardType.image: Int?
+val CreditCardType.image: Int?
     get() {
         when (this) {
-            CreditCardType.Unknown -> return R.drawable.payment_method_genericcard
             CreditCardType.Visa -> return R.drawable.payment_method_visa
             CreditCardType.AmericanExpress -> return R.drawable.payment_method_american_express
             CreditCardType.MasterCard -> return R.drawable.payment_method_mastercard
-            CreditCardType.Maestro -> return R.drawable.payment_method_maestro
-            else -> return R.drawable.payment_method_genericcard
+            else -> return R.drawable.payment_method_genericcard2
         }
     }

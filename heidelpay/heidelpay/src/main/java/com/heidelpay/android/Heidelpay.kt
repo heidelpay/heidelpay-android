@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.heidelpay.android
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.heidelpay.android.backend.BackendService
@@ -72,7 +73,7 @@ typealias HeidelpaySetupCompletion = (heidelpay: Heidelpay?, error: HeidelpayErr
 class Heidelpay {
 
     /// backend service used by this instance
-    private val backendService: BackendService
+    internal val backendService: BackendService
 
     /// available payment methods supported by the SDK and provided by the Heidelpay backend
     val paymentMethods: List<PaymentMethod>
@@ -83,6 +84,8 @@ class Heidelpay {
     }
 
     companion object {
+
+        val sdkVersion: String = BuildConfig.VERSION_NAME
 
         /// helper method for unit testing to mock the backend service
         internal var backendServiceCreator: (publicKey: PublicKey, environment: Environment) -> BackendService = { publicKey, environment ->

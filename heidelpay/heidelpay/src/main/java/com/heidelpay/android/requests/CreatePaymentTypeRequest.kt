@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import org.json.JSONObject
 internal class CreatePaymentTypeRequest(val type: CreatePaymentType) : HeidelpayDataRequest {
 
     /// request path which depends on the payment method to be created
-    override val requestPath: String = "types/${type.method.rawValue}"
+    override val requestPath: String = "types/${type.method.createPaymentTypeBackendPath}"
 
     override fun encodeToJSON(): JSONObject {
         return type.encodeAsJSON()
@@ -49,6 +49,8 @@ internal class CreatePaymentTypeRequest(val type: CreatePaymentType) : Heidelpay
         }
         throw BackendError.InvalidRequest()
     }
+
+    override var httpMethod: String = "POST"
 }
 
 /**

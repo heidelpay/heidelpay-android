@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import com.heidelpay.android.types.ServerErrorDetails
 /**
  * Enumeration of errors that may occur during setup or creation of payment types
  */
-sealed class HeidelpayError {
+
+sealed class HeidelpayError : Exception() {
     /// the server could not be reached because there seems to be no internet connection
     class NoInternetConnection : HeidelpayError()
 
@@ -35,6 +36,5 @@ sealed class HeidelpayError {
     class ServerError(val details: ServerErrorDetails) : HeidelpayError()
 
     //needed for adding an 'static' extension (see mapFromBackendError)
-    companion object {
-    }
+    companion object
 }

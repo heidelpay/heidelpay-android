@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import com.heidelpay.android.backend.BackendService
 import com.heidelpay.android.backend.HeidelpayBackendRequestCompletion
 import com.heidelpay.android.backend.HeidelpayRequest
 
-interface MockedResponse {}
+interface MockedResponse
 
-internal data class MockedJSONResponse(val json: String) : MockedResponse {}
+internal data class MockedJSONResponse(val json: String) : MockedResponse
 
-internal data class MockedBackendErrorResponse(val backendError: BackendError): MockedResponse {}
+internal data class MockedBackendErrorResponse(val backendError: BackendError) : MockedResponse
 
 internal class TestBackendService : BackendService {
 
