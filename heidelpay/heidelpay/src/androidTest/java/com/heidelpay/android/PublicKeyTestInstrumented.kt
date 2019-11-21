@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,11 @@
 
 package com.heidelpay.android
 
-import android.support.test.runner.AndroidJUnit4
-
-import com.heidelpay.android.types.PaymentType
+import androidx.test.runner.AndroidJUnit4
 import com.heidelpay.android.types.PublicKey
-
-import org.json.JSONArray
-import org.json.JSONObject
+import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.

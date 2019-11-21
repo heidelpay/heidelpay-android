@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ class GroupingStyleTest {
 
     @Test
     fun testVarGroupingStyle() {
-        Assert.assertEquals("12_3_45_6", VariableGroups(groupSizes = intArrayOf(2,1,2,1), maximumLength = 6).groupString("123456789", "_"))
+        Assert.assertEquals("12_3_45_6", VariableGroups(groupSizes = intArrayOf(2, 1, 2, 1), maximumLength = 6).groupString("123456789", "_"))
 
-        Assert.assertEquals("12_3456_78", VariableGroups(groupSizes = intArrayOf(2,4,2), maximumLength = 8).groupString("1234567890", "_"))
+        Assert.assertEquals("12_3456_78", VariableGroups(groupSizes = intArrayOf(2, 4, 2), maximumLength = 8).groupString("1234567890", "_"))
     }
 }

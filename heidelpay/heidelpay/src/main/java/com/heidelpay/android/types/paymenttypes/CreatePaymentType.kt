@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.heidelpay.android.types.paymenttypes
 
+import com.heidelpay.android.types.JsonType
 import com.heidelpay.android.types.PaymentMethod
 import com.heidelpay.android.types.PaymentType
 import org.json.JSONObject
@@ -23,12 +24,12 @@ import org.json.JSONObject
 /**
  * interface implemented by all concrete payment types like CardPayment for creation
  */
-interface CreatePaymentType {
+interface CreatePaymentType: JsonType {
 
     /// payment method of that payment type
     val method: PaymentMethod
 
-    fun encodeAsJSON(): JSONObject {
+    override fun encodeAsJSON(): JSONObject {
         return JSONObject()
     }
 

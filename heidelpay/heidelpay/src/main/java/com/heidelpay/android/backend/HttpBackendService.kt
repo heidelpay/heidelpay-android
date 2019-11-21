@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.heidelpay.android.backend
 import android.net.http.X509TrustManagerExtensions
 import android.os.AsyncTask
 import android.util.Base64
+import com.heidelpay.android.Heidelpay
 import com.heidelpay.android.types.PublicKey
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -51,10 +52,12 @@ internal class HttpBackendService(private val publicKey: PublicKey, private val 
             urlConnection.addRequestProperty("Accept", "application/json")
             urlConnection.addRequestProperty("Accept-Language", "en")
             urlConnection.addRequestProperty("Authorization", publicKey.authorizationHeaderValue)
+            urlConnection.addRequestProperty("SDK-VERSION", Heidelpay.sdkVersion)
+            urlConnection.addRequestProperty("SDK-TYPE", "HeidelpayMobile")
 
             var dataObject: JSONObject? = null
             if (request is HeidelpayDataRequest) {
-                urlConnection.requestMethod = "POST"
+                urlConnection.requestMethod = request.httpMethod
                 urlConnection.addRequestProperty("Content-Type", "application/json")
                 dataObject = request.encodeToJSON()
             } else {
@@ -113,16 +116,12 @@ internal class HttpBackendService(private val publicKey: PublicKey, private val 
 /**
  * Helper type to pass information to the asynchronous backend task
  */
-internal data class BackendRequestParams(val urlConnection: HttpsURLConnection, val dataObject: JSONObject?, val pinHash: String, val completion: HeidelpayHttpBackendServiceInternalCompletion) {
-
-}
+internal data class BackendRequestParams(val urlConnection: HttpsURLConnection, val dataObject: JSONObject?, val pinHash: String, val completion: HeidelpayHttpBackendServiceInternalCompletion)
 
 /**
  * Helper type to pass information to the post execution block of the asynchronous backend task
  */
-internal data class BackendRequestResponse(val urlConnection: HttpsURLConnection, val responseString: String?, val exception: Exception?, val completion: HeidelpayHttpBackendServiceInternalCompletion) {
-
-}
+internal data class BackendRequestResponse(val urlConnection: HttpsURLConnection, val responseString: String?, val exception: Exception?, val completion: HeidelpayHttpBackendServiceInternalCompletion)
 
 /**
  * Asynchronous backend task that performs a backend call
@@ -130,7 +129,7 @@ internal data class BackendRequestResponse(val urlConnection: HttpsURLConnection
 internal class BackendRequestAsyncTask : AsyncTask<BackendRequestParams, String, BackendRequestResponse>() {
 
     override fun doInBackground(vararg request: BackendRequestParams): BackendRequestResponse {
-        val backendRequestParams = request.get(0)
+        val backendRequestParams = request[0]
 
         try {
             val urlConnection = backendRequestParams.urlConnection
@@ -142,8 +141,12 @@ internal class BackendRequestAsyncTask : AsyncTask<BackendRequestParams, String,
                 urlConnection.outputStream.write(backendRequestParams.dataObject.toString().toByteArray())
             }
 
-            val responseString = readStream(urlConnection.inputStream)
-
+            val responseString: String
+            responseString = when {
+                urlConnection.inputStream != null -> readStream(urlConnection.inputStream)
+                urlConnection.errorStream != null -> readStream(urlConnection.errorStream)
+                else -> throw Exception()
+            }
             return BackendRequestResponse(urlConnection, responseString, null, backendRequestParams.completion)
         } catch (e: Exception) {
             return BackendRequestResponse(backendRequestParams.urlConnection, null, e, backendRequestParams.completion)
@@ -167,11 +170,10 @@ internal class BackendRequestAsyncTask : AsyncTask<BackendRequestParams, String,
                 line = reader.readLine()
             }
         } catch (e: Exception) {
-
         } finally {
             reader?.close()
         }
-        return response.toString();
+        return response.toString()
     }
 }
 
@@ -188,10 +190,10 @@ private fun HttpsURLConnection.pin(publicKeyToPin: String) {
         val md = MessageDigest.getInstance("SHA-256")
         val trustedChain = trustedChain(trustManagerExt)
         for (cert in trustedChain) {
-            val publicKeyOfServer = cert.getPublicKey().getEncoded()
+            val publicKeyOfServer = cert.publicKey.encoded
             md.update(publicKeyOfServer, 0, publicKeyOfServer.size)
             val pin = Base64.encodeToString(md.digest(), Base64.NO_WRAP)
-            certChainMsg += "    sha256/" + pin + " : " + cert.getSubjectDN().toString() + "\n"
+            certChainMsg += "    sha256/" + pin + " : " + cert.subjectDN.toString() + "\n"
             if (publicKeyToPin.equals(pin)) {
                 return
             }
@@ -210,9 +212,9 @@ private fun HttpsURLConnection.pin(publicKeyToPin: String) {
  */
 @Throws(SSLException::class)
 private fun HttpsURLConnection.trustedChain(trustManagerExt: X509TrustManagerExtensions): List<X509Certificate> {
-    val serverCerts = getServerCertificates()
+    val serverCerts = serverCertificates
     val untrustedCerts = Arrays.copyOf(serverCerts, serverCerts.size, Array<X509Certificate>::class.java)
-    val host = getURL().getHost()
+    val host = url.host
     try {
         return trustManagerExt.checkServerTrusted(untrustedCerts, "RSA", host)
     } catch (e: CertificateException) {
@@ -228,7 +230,7 @@ private fun getTrustManagerExt(): X509TrustManagerExtensions {
     trustManagerFactory.init(null as KeyStore?)
 
     var x509TrustManager: X509TrustManager? = null
-    for (trustManager in trustManagerFactory.getTrustManagers()) {
+    for (trustManager in trustManagerFactory.trustManagers) {
         if (trustManager is X509TrustManager) {
             x509TrustManager = trustManager
             break

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.heidelpay.android
 
-import com.heidelpay.android.types.paymenttypes.CardPayment
 import com.heidelpay.android.ui.mask
 import org.junit.Assert
 import org.junit.Test
@@ -25,11 +24,14 @@ class CardPaymentMaskTest {
 
     @Test
     fun testMaskCard() {
-        Assert.assertEquals("444433******1111", "4444333322221111".mask())
-        Assert.assertEquals("444433******1111012345", "4444333322221111012345".mask())
 
-        Assert.assertEquals("**********", "1234567890".mask())
-        Assert.assertEquals("****", "1234".mask())
+        Assert.assertEquals("*1111", "4444333322221111".mask())
+        Assert.assertEquals("*2345", "4444333322221111012345".mask())
+
+        Assert.assertEquals("*7890", "1234567890".mask())
+        Assert.assertEquals("*2345", "12345".mask())
+        Assert.assertEquals("*", "1234".mask())
+        Assert.assertEquals("*", "1".mask())
 
     }
 }

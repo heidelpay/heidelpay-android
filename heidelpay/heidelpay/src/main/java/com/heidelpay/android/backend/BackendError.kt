@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,13 +88,11 @@ internal class BackendServerErrorResponse(val url: String, val timestamp: String
         fun fromJSONString(jsonString: String): BackendServerErrorResponse? {
             try {
                 val jsonObject = JSONObject(jsonString)
-                if (jsonObject.optString("url") != null &&
-                        jsonObject.optString("timestamp") != null &&
-                        jsonObject.optJSONArray("errors") != null) {
+                if (jsonObject.optJSONArray("errors") != null) {
                     val errors = mutableListOf<BackendServerError>()
 
                     val errorsJSONArray = jsonObject.optJSONArray("errors")
-                    for (index in 0..(errorsJSONArray.length() - 1)) {
+                    for (index in 0 until errorsJSONArray.length()) {
                         BackendServerError.fromJSONObject(errorsJSONArray.optJSONObject(index))?.let {
                             errors.add(it)
                         }
@@ -118,13 +116,9 @@ internal class BackendServerError(val code: String, val merchantMessage: String,
     companion object {
         fun fromJSONObject(jsonObject: JSONObject): BackendServerError? {
             try {
-                if (jsonObject.optString("code") != null &&
-                        jsonObject.optString("merchantMessage") != null &&
-                        jsonObject.optString("customerMessage") != null) {
-                    return BackendServerError(jsonObject.optString("code"),
-                            jsonObject.optString("merchantMessage"),
-                            jsonObject.optString("customerMessage"))
-                }
+                return BackendServerError(jsonObject.optString("code"),
+                        jsonObject.optString("merchantMessage"),
+                        jsonObject.optString("customerMessage"))
             } catch (e: Exception) {
             }
             return null

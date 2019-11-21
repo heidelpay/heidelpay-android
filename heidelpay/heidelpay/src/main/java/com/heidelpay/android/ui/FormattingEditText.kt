@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package com.heidelpay.android.ui
 
 import android.content.Context
 import android.os.Build
-import android.support.v7.widget.AppCompatEditText
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import androidx.appcompat.widget.AppCompatEditText
 import com.heidelpay.android.R
 import com.heidelpay.android.ui.model.Input
+import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -58,7 +60,7 @@ abstract class FormattingEditText<T : Input> : AppCompatEditText {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 this@FormattingEditText.removeTextChangedListener(this)
                 if (s != null) {
-                    var string = s.toString()
+                    val string = s.toString()
                     userInput = createInput(string)
 
                     if (userInput != null) {
@@ -67,14 +69,38 @@ abstract class FormattingEditText<T : Input> : AppCompatEditText {
                         } else {
                             this@FormattingEditText.setText(userInput!!.formattedValue)
                         }
+                        if (this@FormattingEditText.shouldColorAsValidInput(userInput!!)) {
+                            this@FormattingEditText.setTextColor(this@FormattingEditText.errorTextColor)
+                        } else {
+                            this@FormattingEditText.setTextColor(this@FormattingEditText.originalTextColor)
+                        }
                         if (userInput!!.valid) {
                             this@FormattingEditText.setTextColor(this@FormattingEditText.originalTextColor)
                         } else if (this@FormattingEditText.errorTextColor != 0) {
                             this@FormattingEditText.setTextColor(this@FormattingEditText.errorTextColor)
                         }
                     }
-                    if (this@FormattingEditText.text != null) {
-                        this@FormattingEditText.setSelection(this@FormattingEditText.text!!.length)
+                    val newText = this@FormattingEditText.text
+                    val groupingSeparator = (userInput as? Input)?.groupingSeparator
+                    if (newText != null && newText.isNotEmpty()) {
+                        val newLength = newText.length
+                        val nextCharIndex = max(min(start-before, newLength-1), 0)
+                        if(isDeleting(count)) {
+                            val nextChar = newText[nextCharIndex]
+
+                            if (groupingSeparator != null && nextChar == groupingSeparator.firstOrNull()) {
+                                this@FormattingEditText.setSelection(max(start - before, 0))
+                            } else {
+                                this@FormattingEditText.setSelection(min(start, newLength))
+                            }
+                        } else {
+                            val nextChar = newText[nextCharIndex]
+                            if (groupingSeparator != null && nextChar == groupingSeparator.firstOrNull()) {
+                                this@FormattingEditText.setSelection(min(start+count + 1, newLength))
+                            } else {
+                                this@FormattingEditText.setSelection(min(start+count, newLength))
+                            }
+                        }
                     }
                 } else {
                     userInput = null
@@ -86,6 +112,10 @@ abstract class FormattingEditText<T : Input> : AppCompatEditText {
                 return count == 0
             }
         })
+    }
+
+    protected open fun shouldColorAsValidInput(userInput: T): Boolean {
+        return userInput.valid
     }
 
     private fun readAttributes(attrs: AttributeSet?) {

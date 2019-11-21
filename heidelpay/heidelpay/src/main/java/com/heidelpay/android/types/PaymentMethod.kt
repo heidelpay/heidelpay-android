@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,36 @@ enum class PaymentMethod(val rawValue: String) : Parcelable {
     Paypal("paypal"),
 
     /// Ideal
-    Ideal("ideal");
+    Ideal("ideal"),
+
+    /// Alipay
+    Alipay("alipay"),
+
+    /// WeChat
+    Wechatpay("wechatpay"),
+
+    /// PIS
+    PIS("PIS"),
+
+    /// invoice factoring
+    InvoiceFactoring("invoice-factoring"),
+
+    /// Hire Purchase
+    HirePurchase("hire-purchase-direct-debit");
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(rawValue)
     }
+
+    /// backend path used to create a payment type for this method
+    val createPaymentTypeBackendPath: String
+        get() {
+            return if (this == PIS) {
+                "pis"
+            } else {
+                rawValue
+            }
+        }
 
     override fun describeContents() = 0
 
@@ -67,10 +92,13 @@ enum class PaymentMethod(val rawValue: String) : Parcelable {
         val CREATOR = object : Parcelable.Creator<PaymentMethod> {
             override fun createFromParcel(parcel: Parcel): PaymentMethod {
                 val rawValue = parcel.readString()
-                val mappedValue = fromString(rawValue)
-                if (mappedValue != null) {
-                    return mappedValue
+                rawValue?.let {
+                    val mappedValue = fromString(it)
+                    if (mappedValue != null) {
+                        return mappedValue
+                    }
                 }
+
                 return Card
             }
 

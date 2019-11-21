@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ interface Input {
     val trimmedValue: String
 
     val valid: Boolean
+
+    val groupingSeparator: String?
 }
 
 /**
@@ -60,7 +62,7 @@ class CreditCardInput : Input {
     override val valid: Boolean
         get() = validationResult == PaymentTypeInformationValidationResult.ValidChecksum
 
-    private val groupingSeparator = " "
+    override val groupingSeparator = " "
     private val maxLength: Int
     private val groupingStyle: GroupingStyle
 
@@ -103,7 +105,8 @@ class IBANInput : Input {
     override val valid: Boolean
         get() = validationResult == PaymentTypeInformationValidationResult.ValidChecksum
 
-    private val groupingSeparator = " "
+    override val groupingSeparator = " "
+
     private val maxLength = 34
     private val groupingStyle = FixedGroups(4, maxLength)
 
@@ -164,6 +167,8 @@ class CvvInput : Input {
 
     private val maxLength = 3
 
+    override val groupingSeparator: String? = null
+
     constructor(cvv: String) {
         this.cvv = cvv.heidelpay_limitedString(maxLength)
         this.valid = this.cvv.length == maxLength
@@ -222,7 +227,7 @@ class CardExpiryInput : Input {
             return -1
         }
 
-    private val groupingSeparator = "/"
+    override val groupingSeparator = "/"
     private val maxLength = 4
     private val groupingStyle = FixedGroups(2, maxLength)
 
@@ -253,5 +258,38 @@ class CardExpiryInput : Input {
     override val trimmedValue: String
         get() {
             return formattedValue.heidelpay_trim(groupingSeparator)
+        }
+}
+
+/**
+ * Holds information about the user input for a BIC
+ */
+class BICInput : Input {
+    /**
+     * The entered bic
+     */
+    val bic: String
+
+    /**
+     * A flag representing if the bic is valid (only performs length check)
+     */
+    override val valid: Boolean
+
+    override val groupingSeparator: String? = null
+
+    constructor(bic: String) {
+        this.bic = bic
+        // bic length: http://databaseadvisors.com/pipermail/accessd/2003-November/034201.html
+        this.valid = this.bic.length >= 8
+    }
+
+    override val formattedValue: String
+        get() {
+            return bic
+        }
+
+    override val trimmedValue: String
+        get() {
+            return formattedValue
         }
 }

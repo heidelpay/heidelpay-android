@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package com.heidelpay.android.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.*
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.fragment.app.Fragment
 import com.heidelpay.android.R
 import kotlinx.android.synthetic.main.fragment_finish_charge.*
 
@@ -40,7 +40,7 @@ interface HeidelpayFinishChargeFragmentListener {
     necessarily indicate that the payment was canceled. You have to check the state from
     your server!
      * */
-    fun heidelPayChargeFragmentDidFinish(canceledByUser: Boolean)
+    fun heidelpayChargeFragmentDidFinish(canceledByUser: Boolean)
 
 }
 
@@ -70,7 +70,7 @@ class HeidelpayFinishChargeFragment : Fragment() {
                     val returnUrl = arguments?.getString(EXTRA_RETURN_URL)
                     if (returnUrl != null) {
                         if (webViewUrl != null && webViewUrl.toString().startsWith(returnUrl)) {
-                            listener?.heidelPayChargeFragmentDidFinish(false)
+                            listener?.heidelpayChargeFragmentDidFinish(false)
                             return false
                         }
                     } else {
@@ -84,7 +84,7 @@ class HeidelpayFinishChargeFragment : Fragment() {
             finishChargeWebView.loadUrl(redirectUrl)
         } else {
             Log.e(TAG, "No redirect URL found")
-            listener?.heidelPayChargeFragmentDidFinish(false)
+            listener?.heidelpayChargeFragmentDidFinish(false)
         }
     }
 
@@ -103,7 +103,7 @@ class HeidelpayFinishChargeFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.finish_charge_cancel_action -> {
-                listener?.heidelPayChargeFragmentDidFinish(true)
+                listener?.heidelpayChargeFragmentDidFinish(true)
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

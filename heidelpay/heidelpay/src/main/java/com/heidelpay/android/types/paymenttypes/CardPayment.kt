@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import org.json.JSONObject
  * @property number: Creditcard number
  * @property cvc: Creditcard Verification Code
  * @property expiryDate: Expiry date in format MM/YY
+ * @property use3ds: In case you have two contracts, one for 3DS and one without 3DS you can specify which one is the preferred one when using the card type during a charge
  *
  */
-internal data class CardPayment(val number: String, val cvc: String, val expiryDate: String) : CreatePaymentType {
+internal data class CardPayment(val number: String, val cvc: String, val expiryDate: String, val use3ds: Boolean = true) : CreatePaymentType {
 
     override val method: PaymentMethod = PaymentMethod.Card
 
@@ -41,6 +42,7 @@ internal data class CardPayment(val number: String, val cvc: String, val expiryD
         jsonObject.put("number", number)
         jsonObject.put("cvc", cvc)
         jsonObject.put("expiryDate", expiryDate)
+        jsonObject.put("3ds", use3ds)
         return jsonObject
     }
 }

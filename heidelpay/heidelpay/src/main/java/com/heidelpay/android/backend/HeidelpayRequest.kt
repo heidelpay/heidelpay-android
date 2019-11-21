@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,5 +40,6 @@ internal interface HeidelpayRequest {
  * Interface implemented by all Heidelpay backend request tyeps that send JSON
  */
 internal interface HeidelpayDataRequest : HeidelpayRequest {
-    fun encodeToJSON(): JSONObject
+    fun encodeToJSON(): JSONObject?
+    var httpMethod: String
 }

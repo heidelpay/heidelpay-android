@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 package com.heidelpay.android.ui
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat
+import com.heidelpay.android.R
 import com.heidelpay.android.ui.model.CardExpiryInput
 
 /**
@@ -32,7 +35,7 @@ class CardExpiryEditText : FormattingEditText<CardExpiryInput> {
 
     init {
         inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-        setKeyListener(DigitsKeyListener.getInstance("1234567890"))
+        keyListener = DigitsKeyListener.getInstance("1234567890")
         hint = "MM/YY"
     }
 
@@ -42,6 +45,24 @@ class CardExpiryEditText : FormattingEditText<CardExpiryInput> {
      * @return          the created CardExpiryInput instance
      */
     override fun createInput(string: String): CardExpiryInput {
-        return CardExpiryInput(string)
+        val input = CardExpiryInput(string)
+        var img: Drawable?
+        var rightBounds = 0
+        var bottomBounds = 0
+        if (input.valid) {
+            img = ContextCompat.getDrawable(context, R.drawable.success)
+            rightBounds = 65
+            bottomBounds = 65
+        } else {
+            img = ContextCompat.getDrawable(context, R.drawable.expiry)
+            bottomBounds = 43
+            rightBounds = 68
+        }
+        if (img != null) {
+            img.setBounds(0, 0, rightBounds, bottomBounds)
+            compoundDrawablePadding = 20
+            setCompoundDrawables(img, null, null, null)
+        }
+        return input
     }
 }

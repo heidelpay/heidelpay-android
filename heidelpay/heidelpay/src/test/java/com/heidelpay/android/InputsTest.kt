@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package com.heidelpay.android
 
-import com.heidelpay.android.ui.model.CardExpiryInput
-import com.heidelpay.android.ui.model.CreditCardInput
-import com.heidelpay.android.ui.model.CvvInput
-import com.heidelpay.android.ui.model.IBANInput
+import com.heidelpay.android.ui.model.*
 import org.junit.Assert
 import org.junit.Test
 import java.util.*
@@ -60,12 +57,19 @@ class InputsTest {
         Assert.assertEquals("13/", CardExpiryInput("13").formattedValue)
 
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        val currentYearString = "${currentYear-2000}"
+        val currentYearString = "${currentYear - 2000}"
 
         Assert.assertEquals(true, CardExpiryInput("12/99").valid)
         Assert.assertEquals(true, CardExpiryInput("12/${currentYearString}").valid)
         Assert.assertEquals(false, CardExpiryInput("12/13").valid)
         Assert.assertEquals(false, CardExpiryInput("22/99").valid)
         Assert.assertEquals(false, CardExpiryInput("00/99").valid)
+    }
+
+    @Test
+    fun testBicInput() {
+        Assert.assertEquals("DE123", BICInput("DE123").formattedValue)
+        Assert.assertEquals(false, BICInput("DE123").valid)
+        Assert.assertEquals(true, BICInput("DE123456").valid)
     }
 }

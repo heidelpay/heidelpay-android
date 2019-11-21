@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ class PaymentTypeTest {
     @Test
     fun testPaymentTypesFromMapList() {
         val list = listOf<Any>(
-            mapOf<String, Any>("method" to "paypal", "id" to "A123456"),
-            mapOf<String, Any>("method" to "sofort", "id" to "B123456"),
-            mapOf<String, Any>("method" to "card", "id" to "B123456", "brand" to "Mastercard", "number" to "****1233")
+                mapOf<String, Any>("method" to "paypal", "id" to "A123456"),
+                mapOf<String, Any>("method" to "sofort", "id" to "B123456"),
+                mapOf<String, Any>("method" to "card", "id" to "B123456", "brand" to "Mastercard", "number" to "****1233")
         )
         val paymentTypes = PaymentType.map(list)
         Assert.assertEquals(3, paymentTypes.count())

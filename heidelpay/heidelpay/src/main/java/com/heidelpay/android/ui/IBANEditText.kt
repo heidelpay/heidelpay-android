@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import android.content.Context
 import android.text.InputType
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat
+import com.heidelpay.android.R
 import com.heidelpay.android.ui.model.IBANInput
 
 /**
@@ -32,9 +34,9 @@ class IBANEditText : FormattingEditText<IBANInput> {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     init {
-        setKeyListener(DigitsKeyListener.getInstance("abcdefghijklmnopqrstuvwxyz1234567890 "))
+        keyListener = DigitsKeyListener.getInstance("abcdefghijklmnopqrstuvwxyz1234567890 ")
         setKeyboardType("")
-        hint = "IBAN"
+        hint = "DE56 5199 2312 3609 7838 68"
     }
 
     /**
@@ -59,6 +61,12 @@ class IBANEditText : FormattingEditText<IBANInput> {
 
         setKeyboardType(iban)
 
+        val img = ContextCompat.getDrawable(context, R.drawable.card_debit)
+        if (img != null) {
+            img.setBounds(0, 0, 68, 43)
+            compoundDrawablePadding = 20
+            setCompoundDrawables(img, null, null, null)
+        }
         return IBANInput(iban)
     }
 }

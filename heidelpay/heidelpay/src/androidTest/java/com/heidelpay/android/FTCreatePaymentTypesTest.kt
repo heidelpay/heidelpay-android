@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,38 +16,17 @@
 
 package com.heidelpay.android
 
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.runner.AndroidJUnit4
 import com.heidelpay.android.types.PublicKey
-import org.junit.runner.RunWith
+import com.heidelpay.android.util.FTBaseTest
 import org.junit.Assert.*
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
-class FTCreatePaymentTypesTest {
-
-    fun setupHeidelpay(): Heidelpay {
-        val key = PublicKey("s-pub-2a10ifVINFAjpQJ9qW8jBe5OJPBx6Gxa")
-
-        val lock = CountDownLatch(1)
-
-        var heidelpay: Heidelpay? = null
-
-        Heidelpay.setup(key) { heidelPayInstance, error ->
-            assertNull(error)
-            assertNotNull(heidelPayInstance)
-
-            heidelpay = heidelPayInstance
-
-            lock.countDown()
-        }
-        lock.await(5, TimeUnit.SECONDS)
-
-        assertNotNull(heidelpay)
-
-        return heidelpay!!
-    }
+class FTCreatePaymentTypesTest: FTBaseTest() {
 
     @Test
     fun testSetup() {
@@ -68,6 +47,65 @@ class FTCreatePaymentTypesTest {
 
             assertNotNull(paymentType?.data)
             assertNotNull(paymentType?.data?.get("number"))
+            assertNotNull(paymentType?.data?.get("brand"))
+            assertNotNull(paymentType?.data?.get("expiryDate"))
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+
+            finishedCall = true
+
+            lock.countDown()
+        }
+
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+    @Test
+    fun testCreateCardPaymentNot3ds() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentCard("4444333322221111", "123", "04/25", false) { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+
+            assertNotNull(paymentType?.data)
+            assertNotNull(paymentType?.data?.get("number"))
+            assertNotNull(paymentType?.data?.get("brand"))
+            assertNotNull(paymentType?.data?.get("expiryDate"))
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+
+            finishedCall = true
+
+            lock.countDown()
+        }
+
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+    @Test
+    fun testCreateCardPaymentSet3dsToTrue() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentCard("4444333322221111", "123", "04/25", true) { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+
+            assertNotNull(paymentType?.data)
+            assertNotNull(paymentType?.data?.get("number"))
+            assertNotNull(paymentType?.data?.get("brand"))
             assertNotNull(paymentType?.data?.get("expiryDate"))
             assertNull(paymentType?.data?.get("id"))
             assertNull(paymentType?.data?.get("method"))
@@ -144,7 +182,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentInvoice() { paymentType, error ->
+        heidelPay.createPaymentInvoice { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -198,7 +236,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentSofort() { paymentType, error ->
+        heidelPay.createPaymentSofort { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -225,7 +263,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentGiropay() { paymentType, error ->
+        heidelPay.createPaymentGiropay { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -252,7 +290,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentPrepayment() { paymentType, error ->
+        heidelPay.createPaymentPrepayment { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -279,7 +317,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentPrzelewy24() { paymentType, error ->
+        heidelPay.createPaymentPrzelewy24 { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -306,7 +344,7 @@ class FTCreatePaymentTypesTest {
 
         var finishedCall = false
 
-        heidelPay.createPaymentPayPal() { paymentType, error ->
+        heidelPay.createPaymentPayPal { paymentType, error ->
             assertNotNull(paymentType)
             assertNull(error)
 
@@ -348,6 +386,102 @@ class FTCreatePaymentTypesTest {
             lock.countDown()
         }
 
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+    @Test
+    fun testCreateAlipay() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentAlipay { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+            assertNotNull(paymentType?.data)
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+
+            finishedCall = true
+
+            lock.countDown()
+        }
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+    @Test
+    fun testCreateWeChatPay() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentWeChatPay { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+            assertNotNull(paymentType?.data)
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+
+            finishedCall = true
+
+            lock.countDown()
+        }
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+    @Test
+    fun testCreatePIS() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentPIS { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+            assertNotNull(paymentType?.data)
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+
+            finishedCall = true
+
+            lock.countDown()
+        }
+        lock.await(10, TimeUnit.SECONDS)
+
+        assertTrue(finishedCall)
+    }
+
+
+    @Test
+    fun testCreateInvoiceFactoring() {
+        val heidelPay = setupHeidelpay()
+
+        val lock = CountDownLatch(1)
+
+        var finishedCall = false
+
+        heidelPay.createPaymentInvoiceFactoring { paymentType, error ->
+            assertNotNull(paymentType)
+            assertNull(error)
+            assertNotNull(paymentType?.data)
+            assertNull(paymentType?.data?.get("id"))
+            assertNull(paymentType?.data?.get("method"))
+            finishedCall = true
+
+            lock.countDown()
+        }
         lock.await(10, TimeUnit.SECONDS)
 
         assertTrue(finishedCall)

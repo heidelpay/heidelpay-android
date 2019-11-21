@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Heidelpay GmbH
+ * Copyright (C) 2019 Heidelpay GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,12 +63,12 @@ class PaymentType : Parcelable {
     }
 
     private constructor(p: Parcel) {
-        paymentId = p.readString()
-        method = p.readParcelable<PaymentMethod>(PaymentMethod::class.java.classLoader)
-        title = p.readString()
+        paymentId = p.readString()!!
+        method = p.readParcelable<PaymentMethod>(PaymentMethod::class.java.classLoader)!!
+        title = p.readString()!!
 
         val map = mutableMapOf<String, Any>()
-        p.readMap(map, null)
+        p.readMap(map as Map<*, *>, null)
         data = map
     }
 
