@@ -35,5 +35,5 @@ enum class Environment {
 
     /// public key hash for certificate pinning
     val pinnedPublicKeyHash: String
-        get() = "CohWY4g0vdrI3XrWrsei/vr0libQO/tEzJa2wzf34eA="
+        get() = "QBOk6PGlUr8Xs8v+DNxHAsJc3Z746CtldyNII4tsEnw="
 }
